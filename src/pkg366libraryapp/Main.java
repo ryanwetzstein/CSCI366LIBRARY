@@ -1,6 +1,6 @@
 package pkg366libraryapp;
 
-import java.sql.*;
+
 import java.util.Scanner;
 import java.sql.SQLException;
 
@@ -10,90 +10,6 @@ import java.sql.SQLException;
  */
 public class Main {
 
-    public class Department {
-
-        private int dept_number;
-        private String dept_name;
-
-        public Department() {
-        }
-
-        public Department(String dept_name) {
-            this.dept_name = dept_name;
-        }
-
-        public Department(int dept_number, String dept_name) {
-            this.dept_number = dept_number;
-            this.dept_name = dept_name;
-        }
-
-        public static Department getDepartmentByName(String deptname) throws SQLException {
-
-            String select = "SELECT * FROM department "
-                    + " where department_name = ?";
-
-            PreparedStatement stmtSelect = DatabaseManager.getConnection().prepareStatement(select);
-            stmtSelect.setString(1, deptname);
-            ResultSet rsOne = stmtSelect.executeQuery();
-
-            Department dept = null;
-            while (rsOne.next()) {
-                dept = new Department(rsOne.getInt("department_num"),
-                        rsOne.getString("department_name"));
-            }
-
-            return dept;
-        }
-
-        public int insert() throws SQLException {
-            String insertDept = "INSERT INTO department (department_name) "
-                    + "values (?)";
-
-            PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(insertDept);
-            stmt.setString(1, this.getDept_name());
-
-            int count = stmt.executeUpdate();
-
-            return count;
-        }
-
-        /**
-         * @return the dept_number
-         */
-        public int getDept_number() {
-            return dept_number;
-        }
-
-        /**
-         * @param dept_number the dept_number to set
-         */
-        public void setDept_number(int dept_number) {
-            this.dept_number = dept_number;
-        }
-
-        /**
-         * @return the dept_name
-         */
-        public String getDept_name() {
-            return dept_name;
-        }
-
-        /**
-         * @param dept_name the dept_name to set
-         */
-        public void setDept_name(String dept_name) {
-            this.dept_name = dept_name;
-        }
-    }
-
-    /**
-     */
-    //public static void main(String[] args) {
-//        System.out.println("test");
-//        System.out.println("penis");
-//        System.out.println("big dawg");
-//        System.out.println("nashat was here");
-//    }
     public class CSCI366 {
 
         public void start() {
