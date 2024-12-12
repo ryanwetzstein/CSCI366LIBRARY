@@ -4,15 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- *
- * @author rwetz
- */
 public class DatabaseManager {
 
         private static String jdbcURL = "jdbc:postgresql://localhost:5432/LibraryAdmin";
-        private static String username = "postgres";
-        private static String password = "password12345!";
+        private static String username = "LibraryAdmin";
+        private static String password = "12345!";
 
         private static Connection connection;
 
@@ -28,8 +24,7 @@ public class DatabaseManager {
                 // load the driver
                 Class.forName("org.postgresql.Driver");
                 // connect to the database
-                connection
-                        = DriverManager.getConnection(jdbcURL, username, password);
+                connection = DriverManager.getConnection(jdbcURL, username, password);
 
             } catch (ClassNotFoundException e) {
                 System.out.println("Cannot load the driver");
