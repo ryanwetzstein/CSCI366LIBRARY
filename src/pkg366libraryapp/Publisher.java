@@ -16,7 +16,7 @@ public class Publisher {
 
     private int publisher_ID;
     private String name;
-    private Date founded_date;
+    private String founded_date;
     private String email;
     private String description;
 
@@ -24,7 +24,7 @@ public class Publisher {
 
     }
 
-    public Publisher(int publisher_ID, String name, Date founded_date, String email, String description) {
+    public Publisher(int publisher_ID, String name, String founded_date, String email, String description) {
         this.publisher_ID = publisher_ID;
         this.name = name;
         this.founded_date = founded_date;
@@ -32,7 +32,7 @@ public class Publisher {
         this.description = description;
     }
     
-    public Publisher(String name, Date founded_date, String email, String description){
+    public Publisher(String name, String founded_date, String email, String description){
         this.name = name;
         this.founded_date = founded_date;
         this.email = email;
@@ -40,14 +40,13 @@ public class Publisher {
     }
 
     public void insert() {
-        String query = "INSERT INTO Publisher (publisher_ID, name, founded_date, email, description) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Publisher (name, founded_date, email, description) VALUES (?, ?, CAST (? AS DATE), ?, ?)";
 
         try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
-            stmt.setInt(1, this.publisher_ID);
-            stmt.setString(2, this.name);
-            stmt.setDate(3, this.founded_date);
-            stmt.setString(4, this.email);
-            stmt.setString(5, this.description);
+            stmt.setString(1, this.name);
+            stmt.setString(2, this.founded_date);
+            stmt.setString(3, this.email);
+            stmt.setString(4, this.description);
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -57,6 +56,16 @@ public class Publisher {
 
     public static int updatePublisher(int pID, String column, String change) throws SQLException {
         String query = "UPDATE Publisher SET " + column + " = ? WHERE publisher_ID = ?";
+
+        PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query);
+            stmt.setString(1, change);
+            stmt.setInt(2, pID);
+            int count = stmt.executeUpdate();
+        return count;
+    }
+    
+    public static int updatePublisherDate(int pID, String column, String change) throws SQLException {
+        String query = "UPDATE Publisher SET " + column + " = CAST (? AS DATE) WHERE publisher_ID = ?";
 
         PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query);
             stmt.setString(1, change);
@@ -85,7 +94,7 @@ public class Publisher {
             while (rs.next()) {
                 int id = rs.getInt("publisher_ID");
                 String name = rs.getString("name");
-                Date foundedDate = rs.getDate("founded_date");
+                String foundedDate = rs.getString("founded_date");
                 String email = rs.getString("email");
                 String description = rs.getString("description");
 
@@ -95,6 +104,37 @@ public class Publisher {
             e.printStackTrace();
         }
         return publishers;
+    }
+    
+    public static List<Book> listBooksByPublisher(int publisherID) {
+        List<Book> books = new ArrayList<>();
+        String query = "SELECT * "
+                + "FROM Book b "
+                + "JOIN Published p ON b.isbn = p.book_isbn "
+                + "WHERE p.publisher_id = ?";
+
+        try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
+
+            stmt.setInt(1, publisherID);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int isbn = rs.getInt("isbn");
+                    String title = rs.getString("title");
+                    String description = rs.getString("description");
+                    int publication_year = rs.getInt("publication_year");
+                    int available_copies = rs.getInt("available_copies");
+                    int total_copies = rs.getInt("total_copies");
+
+                    books.add(new Book(isbn, title, description, publication_year, available_copies, total_copies));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return books;
     }
 
     public int getPublisher_ID() {
@@ -113,11 +153,11 @@ public class Publisher {
         this.name = name;
     }
 
-    public Date getFounded_Date() {
+    public String getFounded_Date() {
         return founded_date;
     }
 
-    public void setFounded_Date(Date founded_date) {
+    public void setFounded_Date(String founded_date) {
         this.founded_date = founded_date;
     }
 

@@ -14,20 +14,20 @@ public class Author {
     private int author_ID;
     private String first_name;
     private String last_name;
-    private Date DOB;
+    private String DOB;
 
     public Author() {
 
     }
 
-    public Author(int author_ID, String first_name, String last_name, Date DOB) {
+    public Author(int author_ID, String first_name, String last_name, String DOB) {
         this.author_ID = author_ID;
         this.first_name = first_name;
         this.last_name = last_name;
         this.DOB = DOB;
     }
     
-    public Author(String first_name, String last_name, Date DOB){
+    public Author(String first_name, String last_name, String DOB){
         this.first_name = first_name;
         this.last_name = last_name;
         this.DOB = DOB;
@@ -43,7 +43,7 @@ public class Author {
                 int id = rs.getInt("author_ID");
                 String firstName = rs.getString("first_name");
                 String lastName = rs.getString("last_name");
-                Date dob = rs.getDate("DOB");
+                String dob = rs.getString("DOB");
 
                 authors.add(new Author(id, firstName, lastName, dob));
             }
@@ -54,13 +54,12 @@ public class Author {
     }
 
     public void insert() {
-        String query = "INSERT INTO Author (author_ID, first_name, last_name, DOB) VALUES (?, ?, ?, ?, ?)";
-
+        String query = "INSERT INTO Author (first_name, last_name, DOB) VALUES (?, ?, CAST(? AS DATE))";
+        
         try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
-            stmt.setInt(1, this.author_ID);
-            stmt.setString(2, this.first_name);
-            stmt.setString(3, this.last_name);
-            stmt.setDate(4, this.DOB);
+            stmt.setString(1, this.first_name);
+            stmt.setString(2, this.last_name);
+            stmt.setString(3, this.DOB);
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -80,7 +79,7 @@ public class Author {
                 int id = rs.getInt("author_ID");
                 String firstName = rs.getString("first_name");
                 String lastName = rs.getString("last_name");
-                Date dob = rs.getDate("DOB");
+                String dob = rs.getString("DOB");
 
                 author = new Author(id, firstName, lastName, dob);
             }
@@ -110,6 +109,47 @@ public class Author {
             int count = stmt.executeUpdate();
         return count;
     }
+    
+    public static int updateAuthorDate(int aID, String column, String change) throws SQLException {
+        String query = "UPDATE Author SET " + column + " = CAST (? AS DATE) WHERE author_ID = ?";
+
+        PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query);
+            stmt.setString(1, change);
+            stmt.setInt(2, aID);
+            int count = stmt.executeUpdate();
+        return count;
+    }
+    
+    public static List<Book> listBooksByAuthor(int authorID) {
+        List<Book> books = new ArrayList<>();
+        String query = "SELECT * "
+                + "FROM Book b "
+                + "JOIN Wrote w ON b.isbn = w.book_isbn "
+                + "WHERE w.author_id = ?";
+
+        try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
+
+            stmt.setInt(1, authorID);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int isbn = rs.getInt("isbn");
+                    String title = rs.getString("title");
+                    String description = rs.getString("description");
+                    int publication_year = rs.getInt("publication_year");
+                    int available_copies = rs.getInt("available_copies");
+                    int total_copies = rs.getInt("total_copies");
+
+                    books.add(new Book(isbn, title, description, publication_year, available_copies, total_copies));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return books;
+    }
 
     public int getAuthor_ID() {
         return author_ID;
@@ -135,11 +175,11 @@ public class Author {
         this.last_name = last_name;
     }
 
-    public Date getDOB() {
+    public String getDOB() {
         return DOB;
     }
 
-    public void setDOB(Date DOB) {
+    public void setDOB(String DOB) {
         this.DOB = DOB;
     }
 }

@@ -80,6 +80,19 @@ public class Customer {
 
         return count;
     }
+    
+    public static int updateCustomerDate(int cID, String column, String change) throws SQLException {
+        String query = "UPDATE Customer SET " + column + " = CAST (? AS DATE) WHERE customer_id = ?";
+
+        PreparedStatement pstmt = DatabaseManager.getConnection().prepareStatement(query);
+        pstmt.setString(1, change);
+        pstmt.setInt(2, cID);
+
+        int count = pstmt.executeUpdate();
+
+        return count;
+    }
+
 
     public static int removeCustomer(int cID) throws SQLException {
         String query = "DELETE FROM Customer WHERE customer_id = ?";

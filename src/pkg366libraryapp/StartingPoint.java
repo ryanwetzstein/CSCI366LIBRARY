@@ -1,9 +1,6 @@
 package pkg366libraryapp;
 
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -17,7 +14,7 @@ public class StartingPoint {
     public static int loggedIn = 0;
     Customer loggedInUser = null;
 
-    public void start() throws ParseException {
+    public void start(){
 
         if (loggedIn == 0) {
             manageAuthCustomer();
@@ -97,7 +94,7 @@ public class StartingPoint {
         }
     }
 
-    private void adminOptions() throws ParseException {
+    private void adminOptions() {
         if (!loggedInUser.getIsAdmin()) {
             System.out.println("You don't have permission to access this.");
         } else {
@@ -217,9 +214,7 @@ public class StartingPoint {
                         String lastname = scanner.nextLine();
                         System.out.println("Enter a DOB.");
                         String dob = scanner.nextLine();
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-                        Date date = dateFormat.parse(dob);
-                        Author author = new Author(firstname, lastname, (java.sql.Date) date);
+                        Author author = new Author(firstname, lastname, dob);
                         author.insert();
                         System.out.println("Author added successfully");
                     }
@@ -242,13 +237,11 @@ public class StartingPoint {
                         String name = scanner.nextLine();
                         System.out.println("Enter a founded date.");
                         String founded_date = scanner.nextLine();
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-                        Date date = dateFormat.parse(founded_date);
                         System.out.println("Enter an email.");
                         String email = scanner.nextLine();
                         System.out.println("Enter a description.");
                         String description = scanner.nextLine();
-                        Publisher publisher = new Publisher(name, (java.sql.Date) date, email, description);
+                        Publisher publisher = new Publisher(name, founded_date, email, description);
                         publisher.insert();
                         System.out.println("Author added successfully");
                     }
@@ -274,7 +267,7 @@ public class StartingPoint {
         }
     }
 
-    private void manageCustomer() throws ParseException {
+    private void manageCustomer(){
         String choice = "";
 
         while (!choice.equals("q")) {
@@ -435,7 +428,7 @@ public class StartingPoint {
                         System.out.println("Enter your new date of birth: ");
                         String s = scan.next();
                         if (Customer.validateDOB(s)) {
-                            Customer.updateCustomer(ID, "DOB", s);
+                            Customer.updateCustomerDate(ID, "DOB", s);
                             System.out.println("Update Successful.");
                         } else {
                             System.out.println("Invalid Email.");
@@ -650,6 +643,7 @@ public class StartingPoint {
             // Display menu options
             System.out.println("\n--- Manage Authors ---");
             System.out.println("1. List All Authors");
+            System.out.println("2. List Books by Given Author");
             System.out.println("9. Exit");
             System.out.print("Enter your choice: ");
 
@@ -666,6 +660,20 @@ public class StartingPoint {
                         System.out.println("Author ID: " + author.getAuthor_ID() + ", First Name: " + author.getFirst_Name()
                                 + ", Last Name: " + author.getLast_Name()
                                 + ", DOB: " + author.getDOB());
+                    }
+                    break;
+                case 2:
+                    // List all books by given author
+                    Scanner scan = new Scanner(System.in);
+                    System.out.println("Please provide an author ID: ");
+                    int authorID = scan.nextInt();
+                    List<Book> booksByAuthor = Book.listBooksByAuthor(authorID);
+                    System.out.println("\n--- Books Ordered by Author ---");
+                    for (Book book : booksByAuthor) {
+                        System.out.println("ISBN: " + book.getIsbn() + ", Title: " + book.getTitle()
+                                + ", Available Copies: " + book.getAvailable_copies()
+                                + ", Total Copies: " + book.getTotal_copies()
+                                + ", Publication Year: " + book.getPublication_year());
                     }
                     break;
                 case 9:
@@ -685,6 +693,7 @@ public class StartingPoint {
             // Display menu options
             System.out.println("\n--- Manage Publishers ---");
             System.out.println("1. List All Publishers");
+            System.out.println("2. List Books by Given Publisher");
             System.out.println("9. Exit");
             System.out.print("Enter your choice: ");
 
@@ -702,6 +711,19 @@ public class StartingPoint {
                                 + ", Founded Date: " + publisher.getFounded_Date()
                                 + ", Email: " + publisher.getEmail()
                                 + ", Description:" + publisher.getDescription());
+                    }
+                    break;
+                    case 2:
+                    Scanner scan = new Scanner(System.in);
+                    System.out.println("Please provide a publisher ID: ");
+                    int publisherID = scan.nextInt();
+                    List<Book> booksByPublisher = Book.listBooksByPublisher(publisherID);
+                    System.out.println("\n--- Books Ordered by Publisher ---");
+                    for (Book book : booksByPublisher) {
+                        System.out.println("ISBN: " + book.getIsbn() + ", Title: " + book.getTitle()
+                                + ", Available Copies: " + book.getAvailable_copies()
+                                + ", Total Copies: " + book.getTotal_copies()
+                                + ", Publication Year: " + book.getPublication_year());
                     }
                     break;
                 case 9:
@@ -755,7 +777,7 @@ public class StartingPoint {
                     try {
                         Scanner scan = new Scanner(System.in);
                         System.out.println("Enter your new DOB: ");
-                        Author.updateAuthor(author_ID, "DOB", scan.next());
+                        Author.updateAuthorDate(author_ID, "DOB", scan.next());
                         System.out.println("Update Successful.");
                     } catch (SQLException e) {
                         System.out.println("Got a SQL exception.");
@@ -813,7 +835,7 @@ public class StartingPoint {
                     try {
                         Scanner scan = new Scanner(System.in);
                         System.out.println("Enter your new DOB: ");
-                        Publisher.updatePublisher(publisher_ID, "DOB", scan.next());
+                        Publisher.updatePublisherDate(publisher_ID, "DOB", scan.next());
                         System.out.println("Update Successful.");
                     } catch (SQLException e) {
                         System.out.println("Got a SQL exception.");
