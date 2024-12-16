@@ -1,6 +1,9 @@
 package pkg366libraryapp;
 
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,7 +17,7 @@ public class StartingPoint {
     public static int loggedIn = 0;
     Customer loggedInUser = null;
 
-    public void start() {
+    public void start() throws ParseException {
 
         if (loggedIn == 0) {
             manageAuthCustomer();
@@ -29,7 +32,9 @@ public class StartingPoint {
             System.out.println("\nWhat would you like to do next?"
                     + "\n Enter 'a' to manage Books. "
                     + "\n Enter 'b' to manage your account. "
-                    + "\n Enter 'c' to view admin options. ");
+                    + "\n Enter 'c' to manage Authors."
+                    + "\n Enter 'd' to manage Publishers."
+                    + "\n Enter 'e' to view admin options. ");
             String choice = scanChoice.next();
 
             switch (choice) {
@@ -38,6 +43,10 @@ public class StartingPoint {
                 case "b" ->
                     this.manageCustomer();
                 case "c" ->
+                    this.manageAuthor();
+                case "d" ->
+                    this.managePublisher();
+                case "e" ->
                     this.adminOptions();
                 default ->
                     System.out.println("Invalid operation.");
@@ -88,7 +97,7 @@ public class StartingPoint {
         }
     }
 
-    private void adminOptions() {
+    private void adminOptions() throws ParseException {
         if (!loggedInUser.getIsAdmin()) {
             System.out.println("You don't have permission to access this.");
         } else {
@@ -108,6 +117,12 @@ public class StartingPoint {
                         + "\n Enter 'g' to delete a user."
                         + "\n Enter 'h' to insert a book."
                         + "\n Enter 'i' to remove a book."
+                        +"\n Enter 'j' to create an author."
+                        +"\n Enter 'k to delete an author."
+                        +"\n Enter 'l' to update an author."
+                        +"\n Enter 'm' to create a publisher."
+                        +"\n Enter 'n' to delete a publisher." 
+                        +"\n Enter 'o' to update a publisher."
                         + "\n Enter 'q' to Quit."
                 );
 
@@ -194,6 +209,62 @@ public class StartingPoint {
                         Book.removeBook(removeIsbn);
                         System.out.println("Book removed successfully.");
                     }
+                    case "j" ->{
+                        Scanner scanner = new Scanner(System.in);
+                        System.out.println("Enter a first name.");
+                        String firstname = scanner.nextLine();
+                        System.out.println("Enter a last name.");
+                        String lastname = scanner.nextLine();
+                        System.out.println("Enter a DOB.");
+                        String dob = scanner.nextLine();
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+                        Date date = dateFormat.parse(dob);
+                        Author author = new Author(firstname, lastname, (java.sql.Date) date);
+                        author.insert();
+                        System.out.println("Author added successfully");
+                    }
+                    case "k" ->{
+                        Scanner scanner = new Scanner(System.in);
+                        System.out.print("Enter the ID of the author to remove:");
+                        int authorId = scanner.nextInt();
+                        Author.removeAuthor(authorId);
+                        System.out.println("Author removed successfully");
+                    }
+                    case "l" -> {
+                        Scanner scanner = new Scanner(System.in);
+                        System.out.print("Enter the ID of the author you want to update:");
+                        int author_ID = scanner.nextInt();
+                        updateAuthor(author_ID);
+                    }
+                    case "m" ->{
+                        Scanner scanner = new Scanner(System.in);
+                        System.out.println("Enter a name.");
+                        String name = scanner.nextLine();
+                        System.out.println("Enter a founded date.");
+                        String founded_date = scanner.nextLine();
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+                        Date date = dateFormat.parse(founded_date);
+                        System.out.println("Enter an email.");
+                        String email = scanner.nextLine();
+                        System.out.println("Enter a description.");
+                        String description = scanner.nextLine();
+                        Publisher publisher = new Publisher(name, (java.sql.Date) date, email, description);
+                        publisher.insert();
+                        System.out.println("Author added successfully");
+                    }
+                    case "n" ->{
+                        Scanner scanner = new Scanner(System.in);
+                        System.out.print("Enter the ID of the publisher to remove:");
+                        int publisher_Id = scanner.nextInt();
+                        Publisher.removePublisher(publisher_Id);
+                        System.out.println("Author removed successfully");
+                    }
+                    case "o" ->{
+                        Scanner scanner = new Scanner(System.in);
+                        System.out.print("Enter the ID of the publisher you want to update:");
+                        int publisher_ID = scanner.nextInt();
+                        updatePublisher(publisher_ID);
+                    }
                     case "q" ->
                         System.out.println("\nExiting admin menu.\n");
                     default ->
@@ -203,7 +274,7 @@ public class StartingPoint {
         }
     }
 
-    private void manageCustomer() {
+    private void manageCustomer() throws ParseException {
         String choice = "";
 
         while (!choice.equals("q")) {
@@ -569,5 +640,202 @@ public class StartingPoint {
             }
         } while (choice != 9); // Loop until the user chooses to exit
 
+    }
+    
+    private void manageAuthor(){
+        Scanner scanner = new Scanner(System.in);
+        int choice;
+
+        do {
+            // Display menu options
+            System.out.println("\n--- Manage Authors ---");
+            System.out.println("1. List All Authors");
+            System.out.println("9. Exit");
+            System.out.print("Enter your choice: ");
+
+            // Get user input
+            choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    // List All Books
+                    List<Author> allAuthors = Author.listAuthors();
+                    System.out.println("\n--- All Authors ---");
+                    for (Author author : allAuthors) {
+                        System.out.println("Author ID: " + author.getAuthor_ID() + ", First Name: " + author.getFirst_Name()
+                                + ", Last Name: " + author.getLast_Name()
+                                + ", DOB: " + author.getDOB());
+                    }
+                    break;
+                case 9:
+                    // Exit the loop
+                    System.out.println("Exiting...");
+                default:
+                    System.out.println("Invalid choice, please try again.");
+            }
+        } while (choice != 9); // Loop until the user chooses to exit
+    }
+    
+    private void managePublisher(){
+        Scanner scanner = new Scanner(System.in);
+        int choice;
+
+        do {
+            // Display menu options
+            System.out.println("\n--- Manage Publishers ---");
+            System.out.println("1. List All Publishers");
+            System.out.println("9. Exit");
+            System.out.print("Enter your choice: ");
+
+            // Get user input
+            choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    // List All Books
+                    List<Publisher> allPublishers = Publisher.listPublishers();
+                    System.out.println("\n--- All Authors ---");
+                    for (Publisher publisher : allPublishers) {
+                        System.out.println("Publisher ID: " + publisher.getPublisher_ID() + ", Name: " + publisher.getName()
+                                + ", Founded Date: " + publisher.getFounded_Date()
+                                + ", Email: " + publisher.getEmail()
+                                + ", Description:" + publisher.getDescription());
+                    }
+                    break;
+                case 9:
+                    // Exit the loop
+                    System.out.println("Exiting...");
+                default:
+                    System.out.println("Invalid choice, please try again.");
+            }
+        } while (choice != 9); // Loop until the user chooses to exit
+    }
+    
+    private void updateAuthor(int author_ID){
+        String choice = "";
+
+        while (!choice.equals("q")) {
+
+            Scanner scanChoice = new Scanner(System.in);
+
+            System.out.println("\nWhat would you like to update?."
+                    + "\n Enter 'a' to update first name."
+                    + "\n Enter 'b' to update last name."
+                    + "\n Enter 'c' to update DOB."
+                    + "\n Enter 'q' to Quit.");
+
+            choice = scanChoice.next();
+
+            switch (choice) {
+                case "a" -> {
+                    try {
+                        Scanner scan = new Scanner(System.in);
+                        System.out.println("Enter your new first name: ");
+                        Author.updateAuthor(author_ID, "first_name", scan.next());
+                        System.out.println("Update Successful.");
+                    } catch (SQLException e) {
+                        System.out.println("Got a SQL exception.");
+                        e.printStackTrace();
+                    }
+                }
+                case "b" -> {
+                    try {
+                        Scanner scan = new Scanner(System.in);
+                        System.out.println("Enter your new last name: ");
+                        Author.updateAuthor(author_ID, "last_name", scan.next());
+                        System.out.println("Update Successful.");
+                    } catch (SQLException e) {
+                        System.out.println("Got a SQL exception.");
+                        e.printStackTrace();
+                    }
+                }
+                case "c" -> {
+                    try {
+                        Scanner scan = new Scanner(System.in);
+                        System.out.println("Enter your new DOB: ");
+                        Author.updateAuthor(author_ID, "DOB", scan.next());
+                        System.out.println("Update Successful.");
+                    } catch (SQLException e) {
+                        System.out.println("Got a SQL exception.");
+                        e.printStackTrace();
+                    }
+                }
+                case "q" ->
+                    System.out.println("\nExiting author manager..\n");
+                default ->
+                    System.out.println("Invalid operation.");
+            }
+        }
+    }
+    
+    private void updatePublisher(int publisher_ID){
+        String choice = "";
+
+        while (!choice.equals("q")) {
+
+            Scanner scanChoice = new Scanner(System.in);
+
+            System.out.println("\nWhat would you like to update?."
+                    + "\n Enter 'a' to update name."
+                    + "\n Enter 'b' to update founded date."
+                    + "\n Enter 'c' to update email."
+                    + "\n Enter 'd' to update description."
+                    + "\n Enter 'q' to Quit.");
+
+            choice = scanChoice.next();
+
+            switch (choice) {
+                case "a" -> {
+                    try {
+                        Scanner scan = new Scanner(System.in);
+                        System.out.println("Enter your new first name: ");
+                        Publisher.updatePublisher(publisher_ID, "first_name", scan.next());
+                        System.out.println("Update Successful.");
+                    } catch (SQLException e) {
+                        System.out.println("Got a SQL exception.");
+                        e.printStackTrace();
+                    }
+                }
+                case "b" -> {
+                    try {
+                        Scanner scan = new Scanner(System.in);
+                        System.out.println("Enter your new last name: ");
+                        Publisher.updatePublisher(publisher_ID, "last_name", scan.next());
+                        System.out.println("Update Successful.");
+                    } catch (SQLException e) {
+                        System.out.println("Got a SQL exception.");
+                        e.printStackTrace();
+                    }
+                }
+                case "c" -> {
+                    try {
+                        Scanner scan = new Scanner(System.in);
+                        System.out.println("Enter your new DOB: ");
+                        Publisher.updatePublisher(publisher_ID, "DOB", scan.next());
+                        System.out.println("Update Successful.");
+                    } catch (SQLException e) {
+                        System.out.println("Got a SQL exception.");
+                        e.printStackTrace();
+                    }
+                }
+                case "d" ->{
+                    try{
+                        Scanner scan = new Scanner(System.in);
+                        System.out.println("Enter your new description: ");
+                        Publisher.updatePublisher(publisher_ID, "description", scan.next());
+                        System.out.println("Update Successful.");
+                    } catch (SQLException e){
+                        System.out.println("Got a SQL exception.");
+                        e.printStackTrace();
+                    }
+                }
+                case "q" ->
+                    System.out.println("\nExiting author manager..\n");
+                default ->
+                    System.out.println("Invalid operation.");
+            }
+        }
     }
 }

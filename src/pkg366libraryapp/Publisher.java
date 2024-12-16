@@ -20,10 +20,6 @@ public class Publisher {
     private String email;
     private String description;
 
-    private static String jdbcURL = "jdbc:postgresql://localhost:5432/LibraryAdmin";
-    private static String username = "LibraryAdmin";
-    private static String password = "12345!";
-
     public Publisher() {
 
     }
@@ -35,8 +31,15 @@ public class Publisher {
         this.email = email;
         this.description = description;
     }
+    
+    public Publisher(String name, Date founded_date, String email, String description){
+        this.name = name;
+        this.founded_date = founded_date;
+        this.email = email;
+        this.description = description;
+    }
 
-    public void Insert() {
+    public void insert() {
         String query = "INSERT INTO Publisher (publisher_ID, name, founded_date, email, description) VALUES (?, ?, ?, ?, ?)";
 
         try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
@@ -52,18 +55,17 @@ public class Publisher {
         }
     }
 
-    public static void UpdatePublisher(int publisherID, String condition) {
-        String query = "UPDATE Publisher SET " + condition + " WHERE publisher_ID = ?";
+    public static int updatePublisher(int pID, String column, String change) throws SQLException {
+        String query = "UPDATE Publisher SET " + column + " = ? WHERE publisher_ID = ?";
 
-        try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
-            stmt.setInt(1, publisherID);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query);
+            stmt.setString(1, change);
+            stmt.setInt(2, pID);
+            int count = stmt.executeUpdate();
+        return count;
     }
 
-    public static void RemovePublisher(int publisherID) {
+    public static void removePublisher(int publisherID) {
         String query = "DELETE FROM Publisher WHERE publisher_ID = ?";
 
         try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
@@ -74,9 +76,9 @@ public class Publisher {
         }
     }
 
-    public static List<Publisher> ListPublisher(String condition) {
+    public static List<Publisher> listPublishers() {
         List<Publisher> publishers = new ArrayList<>();
-        String query = "SELECT * FROM Publisher WHERE " + condition;
+        String query = "SELECT * FROM Publisher";
 
         try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 

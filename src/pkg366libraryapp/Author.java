@@ -26,10 +26,16 @@ public class Author {
         this.last_name = last_name;
         this.DOB = DOB;
     }
+    
+    public Author(String first_name, String last_name, Date DOB){
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.DOB = DOB;
+    }
 
-    public static List<Author> ListAuthors(String condition) {
+    public static List<Author> listAuthors() {
         List<Author> authors = new ArrayList<>();
-        String query = "SELECT * FROM Author WHERE " + condition;
+        String query = "SELECT * FROM Author";
 
         try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query); ResultSet rs = stmt.executeQuery()){
 
@@ -47,7 +53,7 @@ public class Author {
         return authors;
     }
 
-    public void Insert() {
+    public void insert() {
         String query = "INSERT INTO Author (author_ID, first_name, last_name, DOB) VALUES (?, ?, ?, ?, ?)";
 
         try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
@@ -62,7 +68,7 @@ public class Author {
         }
     }
 
-    public static Author ListAuthorInfo(int authorID) {
+    public static Author listAuthorInfo(int authorID) {
         String query = "SELECT * FROM Author WHERE author_ID = ?";
         Author author = null;
 
@@ -95,15 +101,14 @@ public class Author {
         }
     }
 
-    public static void updateAuthor(int authorID, String condition) {
-        String query = "UPDATE Author SET " + condition + " WHERE author_ID = ?";
+    public static int updateAuthor(int aID, String column, String change) throws SQLException {
+        String query = "UPDATE Author SET " + column + " = ? WHERE author_ID = ?";
 
-        try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
-            stmt.setInt(1, authorID);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query);
+            stmt.setString(1, change);
+            stmt.setInt(2, aID);
+            int count = stmt.executeUpdate();
+        return count;
     }
 
     public int getAuthor_ID() {
