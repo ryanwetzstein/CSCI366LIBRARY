@@ -16,10 +16,6 @@ public class Author {
     private String last_name;
     private Date DOB;
 
-    private static String jdbcURL = "jdbc:postgresql://localhost:5432/LibraryAdmin";
-    private static String username = "LibraryAdmin";
-    private static String password = "12345!";
-
     public Author() {
 
     }
@@ -35,7 +31,7 @@ public class Author {
         List<Author> authors = new ArrayList<>();
         String query = "SELECT * FROM Author WHERE " + condition;
 
-        try ( Connection conn = DriverManager.getConnection(jdbcURL, username, password);  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery(query)) {
+        try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query); ResultSet rs = stmt.executeQuery()){
 
             while (rs.next()) {
                 int id = rs.getInt("author_ID");
@@ -54,13 +50,13 @@ public class Author {
     public void Insert() {
         String query = "INSERT INTO Author (author_ID, first_name, last_name, DOB) VALUES (?, ?, ?, ?, ?)";
 
-        try ( Connection conn = DriverManager.getConnection(jdbcURL, username, password);  PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, this.author_ID);
-            pstmt.setString(2, this.first_name);
-            pstmt.setString(3, this.last_name);
-            pstmt.setDate(4, this.DOB);
+        try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
+            stmt.setInt(1, this.author_ID);
+            stmt.setString(2, this.first_name);
+            stmt.setString(3, this.last_name);
+            stmt.setDate(4, this.DOB);
 
-            pstmt.executeUpdate();
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -70,10 +66,9 @@ public class Author {
         String query = "SELECT * FROM Author WHERE author_ID = ?";
         Author author = null;
 
-        try ( Connection conn = DriverManager.getConnection(jdbcURL, username, password);  PreparedStatement pstmt = conn.prepareStatement(query)) {
+        try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
-            pstmt.setInt(1, authorID);
-            ResultSet rs = pstmt.executeQuery();
+            stmt.setInt(1, authorID);
 
             if (rs.next()) {
                 int id = rs.getInt("author_ID");
@@ -92,9 +87,9 @@ public class Author {
     public static void removeAuthor(int authorID) {
         String query = "DELETE FROM Author WHERE author_ID = ?";
 
-        try ( Connection conn = DriverManager.getConnection(jdbcURL, username, password);  PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, authorID);
-            pstmt.executeUpdate();
+        try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
+            stmt.setInt(1, authorID);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -103,9 +98,9 @@ public class Author {
     public static void updateAuthor(int authorID, String condition) {
         String query = "UPDATE Author SET " + condition + " WHERE author_ID = ?";
 
-        try ( Connection conn = DriverManager.getConnection(jdbcURL, username, password);  PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, authorID);
-            pstmt.executeUpdate();
+        try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
+            stmt.setInt(1, authorID);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }

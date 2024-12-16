@@ -39,14 +39,14 @@ public class Publisher {
     public void Insert() {
         String query = "INSERT INTO Publisher (publisher_ID, name, founded_date, email, description) VALUES (?, ?, ?, ?, ?)";
 
-        try ( Connection conn = DriverManager.getConnection(jdbcURL, username, password);  PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, this.publisher_ID);
-            pstmt.setString(2, this.name);
-            pstmt.setDate(3, this.founded_date);
-            pstmt.setString(4, this.email);
-            pstmt.setString(5, this.description);
+        try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
+            stmt.setInt(1, this.publisher_ID);
+            stmt.setString(2, this.name);
+            stmt.setDate(3, this.founded_date);
+            stmt.setString(4, this.email);
+            stmt.setString(5, this.description);
 
-            pstmt.executeUpdate();
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -55,9 +55,9 @@ public class Publisher {
     public static void UpdatePublisher(int publisherID, String condition) {
         String query = "UPDATE Publisher SET " + condition + " WHERE publisher_ID = ?";
 
-        try ( Connection conn = DriverManager.getConnection(jdbcURL, username, password);  PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, publisherID);
-            pstmt.executeUpdate();
+        try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
+            stmt.setInt(1, publisherID);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -66,9 +66,9 @@ public class Publisher {
     public static void RemovePublisher(int publisherID) {
         String query = "DELETE FROM Publisher WHERE publisher_ID = ?";
 
-        try ( Connection conn = DriverManager.getConnection(jdbcURL, username, password);  PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, publisherID);
-            pstmt.executeUpdate();
+        try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
+            stmt.setInt(1, publisherID);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -78,7 +78,7 @@ public class Publisher {
         List<Publisher> publishers = new ArrayList<>();
         String query = "SELECT * FROM Publisher WHERE " + condition;
 
-        try ( Connection conn = DriverManager.getConnection(jdbcURL, username, password);  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery(query)) {
+        try ( PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 int id = rs.getInt("publisher_ID");
