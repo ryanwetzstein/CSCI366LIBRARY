@@ -1,6 +1,7 @@
 package pkg366libraryapp;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 
 public class StartingPoint {
@@ -105,7 +106,10 @@ public class StartingPoint {
                         + "\n Enter 'e' to create a user."
                         + "\n Enter 'f' to update a user."
                         + "\n Enter 'g' to delete a user."
-                        + "\n Enter 'q' to Quit.");
+                        + "\n Enter 'h' to insert a book."
+                        + "\n Enter 'i' to remove a book."
+                        + "\n Enter 'q' to Quit."
+                );
 
                 choice = scanChoice.next();
 
@@ -162,6 +166,33 @@ public class StartingPoint {
                             System.out.println("Got a SQL exception.");
                             e.printStackTrace();
                         }
+                    }
+                    case "h" -> {
+                        Scanner scanner = new Scanner(System.in);
+                        System.out.print("Enter ISBN: ");
+                        int isbn = scanner.nextInt();
+                        scanner.nextLine();
+                        System.out.print("Enter Title: ");
+                        String title = scanner.nextLine();
+                        System.out.print("Enter Description: ");
+                        String description = scanner.nextLine();
+                        System.out.print("Enter Publication Year: ");
+                        int publicationYear = scanner.nextInt();
+                        System.out.print("Enter Available Copies: ");
+                        int availableCopies = scanner.nextInt();
+                        System.out.print("Enter Total Copies: ");
+                        int totalCopies = scanner.nextInt();
+                        scanner.nextLine();
+                        Book newBook = new Book(isbn, title, description, publicationYear, availableCopies, totalCopies);
+                        newBook.insertBook();
+                        System.out.println("Book added successfully.");
+                    }
+                    case "i" -> {
+                        Scanner scanner = new Scanner(System.in);
+                        System.out.print("Enter ISBN of the book to remove: ");
+                        int removeIsbn = scanner.nextInt();
+                        Book.removeBook(removeIsbn);
+                        System.out.println("Book removed successfully.");
                     }
                     case "q" ->
                         System.out.println("\nExiting admin menu.\n");
@@ -238,14 +269,14 @@ public class StartingPoint {
         while (!choice.equals("q")) {
 
             int ID;
-            if(self){
+            if (self) {
                 ID = loggedInUser.getCustomerID();
             } else {
                 Scanner scan = new Scanner(System.in);
                 System.out.println("Enter the User ID of the User you are updating.");
                 ID = scan.nextInt();
             }
-            
+
             Scanner scanChoice = new Scanner(System.in);
 
             System.out.println("\nWhat would you like to update?."
@@ -257,8 +288,8 @@ public class StartingPoint {
                     + "\n Enter 'f' to update date of birth."
                     + "\n Enter 'q' to Quit.");
 
-            choice = scanChoice.next();           
-            
+            choice = scanChoice.next();
+
             switch (choice) {
                 case "a" -> {
                     try {
@@ -434,6 +465,109 @@ public class StartingPoint {
     }
 
     private void manageBooks() {
+        Scanner scanner = new Scanner(System.in);
+        int choice;
+
+        do {
+            // Display menu options
+            System.out.println("\n--- Manage Books ---");
+            System.out.println("1. List All Books");
+            System.out.println("2. List Books by Title");
+            System.out.println("3. List Books by Publication Year");
+            System.out.println("4. List Total Count of Books");
+            System.out.println("5. List Count of Most Available Books");
+            System.out.println("6. List Count of Least Available Books");
+            System.out.println("7. List Books by Author");
+            System.out.println("8. List Books by Publisher");
+            System.out.println("9. Exit");
+            System.out.print("Enter your choice: ");
+
+            // Get user input
+            choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    // List All Books
+                    List<Book> allBooks = Book.listAllBooks();
+                    System.out.println("\n--- All Books ---");
+                    for (Book book : allBooks) {
+                        System.out.println("ISBN: " + book.getIsbn() + ", Title: " + book.getTitle()
+                                + ", Available Copies: " + book.getAvailable_copies()
+                                + ", Total Copies: " + book.getTotal_copies()
+                                + ", Publication Year: " + book.getPublication_year());
+                    }
+                    break;
+                case 2:
+                    // List Books by Title
+                    List<Book> booksByTitle = Book.listBooksByTitle();
+                    System.out.println("\n--- Books Ordered by Title ---");
+                    for (Book book : booksByTitle) {
+                        System.out.println("ISBN: " + book.getIsbn() + ", Title: " + book.getTitle()
+                                + ", Available Copies: " + book.getAvailable_copies()
+                                + ", Total Copies: " + book.getTotal_copies()
+                                + ", Publication Year: " + book.getPublication_year());
+                    }
+                    break;
+                case 3:
+                    // List Books by Publication Year
+                    List<Book> booksByYear = Book.listBooksByPublicationYear();
+                    System.out.println("\n--- Books Ordered by Publication Year ---");
+                    for (Book book : booksByYear) {
+                        System.out.println("ISBN: " + book.getIsbn() + ", Title: " + book.getTitle()
+                                + ", Available Copies: " + book.getAvailable_copies()
+                                + ", Total Copies: " + book.getTotal_copies()
+                                + ", Publication Year: " + book.getPublication_year());
+                    }
+                    break;
+                case 4:
+                    // List Total Count of Books
+                    int totalCount = Book.listTotalCountOfBooks();
+                    System.out.println("Total number of books: " + totalCount);
+                    break;
+                case 5:
+                    // List Count of Most Available Books
+                    int mostAvailableCount = Book.listCountOfMostAvailableBook();
+                    System.out.println("Most available books count: " + mostAvailableCount);
+                    break;
+                case 6:
+                    // List Count of Least Available Books
+                    int leastAvailableCount = Book.listCountOfLeastAvailableBook();
+                    System.out.println("Least available books count: " + leastAvailableCount);
+                    break;
+                case 7:
+                    Scanner scan = new Scanner(System.in);
+                    System.out.println("Please provide an author ID: ");
+                    int authorID = scan.nextInt();
+                    List<Book> booksByAuthor = Book.listBooksByAuthor(authorID);
+                    System.out.println("\n--- Books Ordered by Author ---");
+                    for (Book book : booksByAuthor) {
+                        System.out.println("ISBN: " + book.getIsbn() + ", Title: " + book.getTitle()
+                                + ", Available Copies: " + book.getAvailable_copies()
+                                + ", Total Copies: " + book.getTotal_copies()
+                                + ", Publication Year: " + book.getPublication_year());
+                    }
+                    break;
+                case 8:
+                    scan = new Scanner(System.in);
+                    System.out.println("Please provide a publisher ID: ");
+                    int publisherID = scan.nextInt();
+                    List<Book> booksByPublisher = Book.listBooksByPublisher(publisherID);
+                    System.out.println("\n--- Books Ordered by Publisher ---");
+                    for (Book book : booksByPublisher) {
+                        System.out.println("ISBN: " + book.getIsbn() + ", Title: " + book.getTitle()
+                                + ", Available Copies: " + book.getAvailable_copies()
+                                + ", Total Copies: " + book.getTotal_copies()
+                                + ", Publication Year: " + book.getPublication_year());
+                    }
+                    break;
+                case 9:
+                    // Exit the loop
+                    System.out.println("Exiting...");
+                default:
+                    System.out.println("Invalid choice, please try again.");
+            }
+        } while (choice != 9); // Loop until the user chooses to exit
 
     }
 }
