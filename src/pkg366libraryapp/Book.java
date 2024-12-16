@@ -1,8 +1,6 @@
 package pkg366libraryapp;
 
 import java.sql.SQLException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -20,10 +18,6 @@ public class Book {
     private int publication_year;
     private int available_copies;
     private int total_copies;
-
-    private static String jdbcURL = "jdbc:postgresql://localhost:5432/LibraryAdmin";
-    private static String username = "LibraryAdmin";
-    private static String password = "12345!";
 
     public Book() {
 
@@ -52,16 +46,16 @@ public class Book {
     public void insertBook() {
         String query = "INSERT INTO Book (isbn, title, description, publication_year, available_copies, total_copies) VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DriverManager.getConnection(jdbcURL, username, password); PreparedStatement pstmt = conn.prepareStatement(query)) {
+        try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
 
-            pstmt.setInt(1, this.isbn);
-            pstmt.setString(2, this.title);
-            pstmt.setString(3, this.description);
-            pstmt.setInt(4, this.publication_year);
-            pstmt.setInt(5, this.available_copies);
-            pstmt.setInt(6, this.total_copies);
+            stmt.setInt(1, this.isbn);
+            stmt.setString(2, this.title);
+            stmt.setString(3, this.description);
+            stmt.setInt(4, this.publication_year);
+            stmt.setInt(5, this.available_copies);
+            stmt.setInt(6, this.total_copies);
 
-            pstmt.executeUpdate();
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -74,10 +68,10 @@ public class Book {
     public static void removeBook(int isbn) {
         String query = "DELETE FROM Book WHERE isbn = ?";
 
-        try (Connection conn = DriverManager.getConnection(jdbcURL, username, password); PreparedStatement pstmt = conn.prepareStatement(query)) {
+        try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
 
-            pstmt.setInt(1, isbn);
-            pstmt.executeUpdate();
+            stmt.setInt(1, isbn);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -93,7 +87,7 @@ public class Book {
 
         String query = "SELECT * FROM Book";
 
-        try (Connection conn = DriverManager.getConnection(jdbcURL, username, password); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 int isbn = rs.getInt("isbn");
@@ -122,9 +116,9 @@ public class Book {
         List<Book> books = new ArrayList<>();
         // Database connection details
 
-        String query = "SELECT isbn, title, description, publication_year FROM Book ORDER BY title";
+        String query = "SELECT * FROM Book ORDER BY title";
 
-        try (Connection conn = DriverManager.getConnection(jdbcURL, username, password); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 int isbn = rs.getInt("isbn");
@@ -152,7 +146,7 @@ public class Book {
         int totalCount = 0;
         String query = "SELECT COUNT(*) AS total_books FROM Book";
 
-        try (Connection conn = DriverManager.getConnection(jdbcURL, username, password); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             if (rs.next()) {
                 totalCount = rs.getInt("total_books");
@@ -173,7 +167,7 @@ public class Book {
         int leastAvailableCount = 0;
         String query = "SELECT MIN(available_copies) AS least_available FROM Book";
 
-        try (Connection conn = DriverManager.getConnection(jdbcURL, username, password); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             if (rs.next()) {
                 leastAvailableCount = rs.getInt("least_available");
@@ -194,7 +188,7 @@ public class Book {
         int mostAvailableCount = 0;
         String query = "SELECT MAX(available_copies) AS most_available FROM Book";
 
-        try (Connection conn = DriverManager.getConnection(jdbcURL, username, password); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             if (rs.next()) {
                 mostAvailableCount = rs.getInt("most_available");
@@ -213,9 +207,9 @@ public class Book {
      */
     public static List<Book> listBooksByPublicationYear() {
         List<Book> books = new ArrayList<>();
-        String query = "SELECT isbn, title, description, publication_year FROM Book ORDER BY publication_year";
+        String query = "SELECT * FROM Book ORDER BY publication_year";
 
-        try (Connection conn = DriverManager.getConnection(jdbcURL, username, password); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 int isbn = rs.getInt("isbn");
@@ -242,9 +236,9 @@ public class Book {
      */
     public static List<Book> listBooksByCondition(String condition) {
         List<Book> books = new ArrayList<>();
-        String query = "SELECT ISBN, Title, Description, PublicationYear FROM Book WHERE " + condition;
+        String query = "SELECT * FROM Book WHERE " + condition;
 
-        try (Connection conn = DriverManager.getConnection(jdbcURL, username, password); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 int isbn = rs.getInt("isbn");
@@ -271,12 +265,12 @@ public class Book {
      */
     public static List<Book> listBooksByAuthor(int authorID) {
         List<Book> books = new ArrayList<>();
-        String query = "SELECT b.isbn, b.title, b.description, b.publicationYear "
+        String query = "SELECT * "
                 + "FROM Book b "
                 + "JOIN Wrote w ON b.isbn = w.book_isbn "
                 + "WHERE w.author_id = ?";
 
-        try (Connection conn = DriverManager.getConnection(jdbcURL, username, password); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
 
             stmt.setInt(1, authorID);
 
@@ -307,12 +301,12 @@ public class Book {
      */
     public static List<Book> listBooksByPublisher(int publisherID) {
         List<Book> books = new ArrayList<>();
-        String query = "SELECT b.isbn, b.title, b.description, b.publicationYear "
+        String query = "SELECT * "
                 + "FROM Book b "
                 + "JOIN Published p ON b.isbn = p.book_isbn "
                 + "WHERE p.publisher_id = ?";
 
-        try (Connection conn = DriverManager.getConnection(jdbcURL, username, password); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
 
             stmt.setInt(1, publisherID);
 
@@ -343,12 +337,12 @@ public class Book {
      */
     public static List<Book> listBooksByGenre(int genreID) {
         List<Book> books = new ArrayList<>();
-        String query = "SELECT b.isbn, b.title, b.description, b.publicationYear "
+        String query = "SELECT * "
                 + "FROM Book b "
                 + "JOIN typeofbook t ON b.isbn = t.book_isbn "
                 + "WHERE t.genre_id = ?";
 
-        try (Connection conn = DriverManager.getConnection(jdbcURL, username, password); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
 
             stmt.setInt(1, genreID);
 
