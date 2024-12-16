@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  *
- * @author THausauer
+ * @author Trev Hausauer
  */
 public class Author {
 
@@ -15,11 +15,7 @@ public class Author {
     private String first_name;
     private String last_name;
     private String DOB;
-
-    public Author() {
-
-    }
-
+    
     public Author(int author_ID, String first_name, String last_name, String DOB) {
         this.author_ID = author_ID;
         this.first_name = first_name;
@@ -155,31 +151,15 @@ public class Author {
         return author_ID;
     }
 
-    public void setAuthor_ID(int author_ID) {
-        this.author_ID = author_ID;
-    }
-
     public String getFirst_Name() {
         return first_name;
-    }
-
-    public void setFirst_Name(String first_name) {
-        this.first_name = first_name;
     }
 
     public String getLast_Name() {
         return last_name;
     }
 
-    public void setLast_Name(String last_name) {
-        this.last_name = last_name;
-    }
-
     public String getDOB() {
         return DOB;
-    }
-
-    public void setDOB(String DOB) {
-        this.DOB = DOB;
     }
 }

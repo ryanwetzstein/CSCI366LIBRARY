@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  *
- * @author THausauer
+ * @author Trev Hausauer
  */
 public class Publisher {
 
@@ -19,10 +19,6 @@ public class Publisher {
     private String founded_date;
     private String email;
     private String description;
-
-    public Publisher() {
-
-    }
 
     public Publisher(int publisher_ID, String name, String founded_date, String email, String description) {
         this.publisher_ID = publisher_ID;
@@ -141,39 +137,19 @@ public class Publisher {
         return publisher_ID;
     }
 
-    public void setPublisher_ID(int publisher_ID) {
-        this.publisher_ID = publisher_ID;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getFounded_Date() {
         return founded_date;
     }
 
-    public void setFounded_Date(String founded_date) {
-        this.founded_date = founded_date;
-    }
-
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription() {
-        this.description = description;
     }
 }

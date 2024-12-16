@@ -9,6 +9,8 @@ public class StartingPoint {
     /**
      * Logged in variable to track logged in user. 0 - not logged in 1 - logged
      * in 2 - special case
+     * 
+     * Authors: Ryan Wetzstein, Trev Hausauer, Daniel Putnam, Nashat Khan
      *
      */
     public static int loggedIn = 0;
