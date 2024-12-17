@@ -33,7 +33,7 @@ public class Genre {
     //list all genres method
 
     public void insertGenre() {
-        String query = "INSERT INTO Genre (genre_name, genre_description) VALUES (?, ?)";
+        String query = "INSERT INTO Genre (genre_name, description) VALUES (?, ?)";
 
         try (PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query)) {
 
@@ -60,11 +60,11 @@ public class Genre {
         }
         DatabaseManager.getConnection();
     }
-    public static int UpdateGenre(String column, String change, int genreID) throws SQLException
+    public static int updateGenre(String column, String change, int genreID) throws SQLException
     {
  
         DatabaseManager.getConnection();
-        String query = "UPDATE Author SET " + column + " = ? WHERE author_ID = ?";
+        String query = "UPDATE Genre SET " + column + " = ? WHERE genre_id = ?";
 
         PreparedStatement stmt = DatabaseManager.getConnection().prepareStatement(query);
             stmt.setString(1, change);

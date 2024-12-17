@@ -712,10 +712,11 @@ public class StartingPoint {
                 case 11:
                     // Exit the loop
                     System.out.println("Exiting...");
+                    break;
                 default:
                     System.out.println("Invalid choice, please try again.");
             }
-        } while (choice != 10); // Loop until the user chooses to exit
+        } while (choice != 11); // Loop until the user chooses to exit
 
     }
     
@@ -963,7 +964,7 @@ public class StartingPoint {
                     try {
                         Scanner scan = new Scanner(System.in);
                         System.out.println("Enter your new genre name: ");
-                        Publisher.updatePublisher(genre_ID, "genre_name", scan.next());
+                        Genre.updateGenre("genre_name", scan.next(), genre_ID) ;
                         System.out.println("Update Successful.");
                     } catch (SQLException e) {
                         System.out.println("Got a SQL exception.");
@@ -974,7 +975,7 @@ public class StartingPoint {
                     try {
                         Scanner scan = new Scanner(System.in);
                         System.out.println("Enter your new genre_description: ");
-                        Publisher.updatePublisher(genre_ID, "last_name", scan.next());
+                        Genre.updateGenre("description", scan.next(), genre_ID);
                         System.out.println("Update Successful.");
                     } catch (SQLException e) {
                         System.out.println("Got a SQL exception.");
