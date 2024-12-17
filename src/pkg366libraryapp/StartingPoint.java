@@ -1,6 +1,7 @@
 package pkg366libraryapp;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -122,6 +123,10 @@ public class StartingPoint {
                         +"\n Enter 'm' to create a publisher."
                         +"\n Enter 'n' to delete a publisher." 
                         +"\n Enter 'o' to update a publisher."
+                        +"\n Enter 'p' to add a genre."
+                        +"\n Enter 'r' to update a genre."
+                        +"\n Enter 's' to remove a genre."
+                        +"\n Enter 't' to list all borrowed books."
                         + "\n Enter 'q' to Quit."
                 );
 
@@ -259,6 +264,37 @@ public class StartingPoint {
                         System.out.print("Enter the ID of the publisher you want to update:");
                         int publisher_ID = scanner.nextInt();
                         updatePublisher(publisher_ID);
+                    }
+                    case "p" ->{
+                        Scanner scanner = new Scanner(System.in);
+                        System.out.println("Enter a genre name.");
+                        String genre_name = scanner.nextLine();
+                        System.out.println("Enter a description.");
+                        String description = scanner.nextLine();
+                        
+                        Genre genre = new Genre(genre_name, description);
+                        genre.insertGenre();
+                        System.out.println("Genre added successfully");
+                    }
+                    case "r" ->{
+                        Scanner scanner = new Scanner(System.in);
+                        System.out.print("Enter the ID of the genre you want to update:");
+                        int genre_ID = scanner.nextInt();
+                        updateGenre(genre_ID);
+                    }
+                    case "s" ->{
+                        Scanner scanner = new Scanner(System.in);
+                        System.out.print("Enter the ID of the genre to remove:");
+                        int genreId = scanner.nextInt();
+                        Genre.removeGenre(genreId);
+                        System.out.println("genre removed successfully");
+                    }
+                    case "t" ->{
+                        Scanner scanner = new Scanner(System.in);
+                        System.out.print("Enter the ID of the genre to remove:");
+                        int genreId = scanner.nextInt();
+                        Genre.removeGenre(genreId);
+                        System.out.println("genre removed successfully");
                     }
                     case "q" ->
                         System.out.println("\nExiting admin menu.\n");
@@ -545,7 +581,8 @@ public class StartingPoint {
             System.out.println("6. List Count of Least Available Books");
             System.out.println("7. List Books by Author");
             System.out.println("8. List Books by Publisher");
-            System.out.println("9. Exit");
+            System.out.println("9. List All Genres");
+            System.out.println("10. Exit");
             System.out.print("Enter your choice: ");
 
             // Get user input
@@ -628,12 +665,20 @@ public class StartingPoint {
                     }
                     break;
                 case 9:
+                    // List All Genres
+                    List<Genre> allGenres = Genre.listGenres();
+                    System.out.println("\n--- All Genres ---");
+                    for (Genre genre : allGenres) {
+                        System.out.println("Genre Name: " + genre.getGenreName() + ",Description: " + genre.getGenreDescription());
+                    }
+                    break;
+                case 10:
                     // Exit the loop
                     System.out.println("Exiting...");
                 default:
                     System.out.println("Invalid choice, please try again.");
             }
-        } while (choice != 9); // Loop until the user chooses to exit
+        } while (choice != 10); // Loop until the user chooses to exit
 
     }
     
@@ -857,6 +902,182 @@ public class StartingPoint {
                 }
                 case "q" ->
                     System.out.println("\nExiting author manager..\n");
+                default ->
+                    System.out.println("Invalid operation.");
+            }
+        }
+    }
+    private void updateGenre(int genre_ID){
+        String choice = "";
+
+        while (!choice.equals("q")) {
+
+            Scanner scanChoice = new Scanner(System.in);
+
+            System.out.println("\nWhat would you like to update?."
+                    + "\n Enter 'a' to update genre name."
+                    + "\n Enter 'b' to update description."
+                    + "\n Enter 'q' to Quit.");
+
+            choice = scanChoice.next();
+
+            switch (choice) {
+                case "a" -> {
+                    try {
+                        Scanner scan = new Scanner(System.in);
+                        System.out.println("Enter your new genre name: ");
+                        Publisher.updatePublisher(genre_ID, "genre_name", scan.next());
+                        System.out.println("Update Successful.");
+                    } catch (SQLException e) {
+                        System.out.println("Got a SQL exception.");
+                        e.printStackTrace();
+                    }
+                }
+                case "b" -> {
+                    try {
+                        Scanner scan = new Scanner(System.in);
+                        System.out.println("Enter your new genre_description: ");
+                        Publisher.updatePublisher(genre_ID, "last_name", scan.next());
+                        System.out.println("Update Successful.");
+                    } catch (SQLException e) {
+                        System.out.println("Got a SQL exception.");
+                        e.printStackTrace();
+                    }
+                }
+                
+                
+                case "q" ->
+                    System.out.println("\nExiting author manager..\n");
+                default ->
+                    System.out.println("Invalid operation.");
+            }
+        }
+    }
+    private void manageBorrowed(){
+        Scanner scanner = new Scanner(System.in);
+        int choice;
+
+        do {
+            // Display menu options
+            System.out.println("\n--- Manage Your Borrowed Books ---");
+            System.out.println("1. List Most Borrowed Book");
+            System.out.println("2. Update Borrowing");
+            System.out.println("3. Borrow Book");
+            System.out.println("9. Exit");
+            System.out.print("Enter your choice: ");
+
+            // Get user input
+            choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    
+                    List<Borrowings> mostBorrowed = Borrowings.listMostBorrowed();
+                    System.out.println("\n--- Most Borrowed Book ---");
+                    for (Borrowings borrow : mostBorrowed) {
+                        System.out.println(" ID: " + borrow.getBorrowID());
+                    }
+                    
+                    break;
+                case 2:
+                    // update borrowing
+                    Scanner scan = new Scanner(System.in);
+                    System.out.println("Please provide an author ID: ");
+                    int authorID = scan.nextInt();
+                    List<Book> booksByAuthor = Book.listBooksByAuthor(authorID);
+                    System.out.println("\n--- Books Ordered by Author ---");
+                    for (Book book : booksByAuthor) {
+                        System.out.println("ISBN: " + book.getIsbn() + ", Title: " + book.getTitle()
+                                + ", Available Copies: " + book.getAvailable_copies()
+                                + ", Total Copies: " + book.getTotal_copies()
+                                + ", Publication Year: " + book.getPublication_year());
+                    }
+                    break;
+                case 9:
+                    // Exit the loop
+                    System.out.println("Exiting...");
+                default:
+                    System.out.println("Invalid choice, please try again.");
+            }
+        } while (choice != 9); // Loop until the user chooses to exit
+        
+    }
+    private void updateBorrowing(int borrowing_ID){
+        String choice = "";
+
+        while (!choice.equals("q")) {
+
+            Scanner scanChoice = new Scanner(System.in);
+
+            System.out.println("\nWhat would you like to update?."
+                    + "\n Enter 'a' to update borrow_date."
+                    + "\n Enter 'b' to update due_date."
+                    + "\n Enter 'c' to update return_date."
+                    + "\n Enter 'd' to update customer_id."
+                    + "\n Enter 'e to update book_isbn."
+                    + "\n Enter 'q' to Quit.");
+
+            choice = scanChoice.next();
+
+            switch (choice) {
+                case "a" -> {
+                    try {
+                        Scanner scan = new Scanner(System.in);
+                        System.out.println("Enter your new borrow date: ");
+                        Borrowings.updateBorrowingDate(borrowing_ID, "borrow_date", scan.next());
+                        System.out.println("Update Successful.");
+                    } catch (SQLException e) {
+                        System.out.println("Got a SQL exception.");
+                        e.printStackTrace();
+                    }
+                }
+                case "b" -> {
+                    try {
+                        Scanner scan = new Scanner(System.in);
+                        System.out.println("Enter your new due date: ");
+                        Borrowings.updateBorrowingDate(borrowing_ID, "due_date", scan.next());
+                        System.out.println("Update Successful.");
+                    } catch (SQLException e) {
+                        System.out.println("Got a SQL exception.");
+                        e.printStackTrace();
+                    }
+                }
+                case "c" -> {
+                    try {
+                        Scanner scan = new Scanner(System.in);
+                        System.out.println("Enter your new return date: ");
+                        Borrowings.updateBorrowingDate(borrowing_ID, "return_date", scan.next());
+                        System.out.println("Update Successful.");
+                    } catch (SQLException e) {
+                        System.out.println("Got a SQL exception.");
+                        e.printStackTrace();
+                    }
+                }
+                case "d" -> {
+                    try {
+                        Scanner scan = new Scanner(System.in);
+                        System.out.println("Enter your new customer_id: ");
+                        Borrowings.updateBorrowing(borrowing_ID, "customer_id", scan.next());
+                        System.out.println("Update Successful.");
+                    } catch (SQLException e) {
+                        System.out.println("Got a SQL exception.");
+                        e.printStackTrace();
+                    }
+                }
+                case "e" -> {
+                    try {
+                        Scanner scan = new Scanner(System.in);
+                        System.out.println("Enter your new book isbn: ");
+                        Borrowings.updateBorrowing(borrowing_ID, "book_isbn", scan.next());
+                        System.out.println("Update Successful.");
+                    } catch (SQLException e) {
+                        System.out.println("Got a SQL exception.");
+                        e.printStackTrace();
+                    }
+                }
+                case "q" ->
+                    System.out.println("\nExiting borrowing manager..\n");
                 default ->
                     System.out.println("Invalid operation.");
             }
