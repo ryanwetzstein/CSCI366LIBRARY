@@ -25,23 +25,32 @@ public class Borrowings
     
     public Borrowings (int borrow_id, String borrow_date, String due_date, String return_date, int customer_id, int book_isbn)
     {
-        borrow_id = this.borrow_id;
-        borrow_date = this.borrow_date;
-        due_date = this.due_date;
-        return_date = this.return_date;
-        customer_id = this.customer_id;
-        book_isbn = this.book_isbn;
+        this.borrow_id = borrow_id;
+        this.borrow_date = borrow_date;
+        this.due_date = due_date;
+        this.return_date = return_date;
+        this.customer_id = customer_id;
+        this.book_isbn = book_isbn;
+        
+    }
+    public Borrowings ( String borrow_date, String due_date, String return_date, int customer_id, int book_isbn)
+    {
+        this.borrow_date = borrow_date;
+        this.due_date = due_date;
+        this.return_date = return_date;
+        this.customer_id = customer_id;
+        this.book_isbn = book_isbn;
         
     }
     public Borrowings (String borrow_date, String return_date)
     {
-        borrow_date = this.borrow_date;
-        return_date = this.return_date;
+        this.borrow_date = borrow_date;
+        this.return_date = return_date;
 
     }
     public Borrowings (int book_isbn)
     {
-        book_isbn = this.book_isbn;
+        this.book_isbn = book_isbn;
 
     }
     

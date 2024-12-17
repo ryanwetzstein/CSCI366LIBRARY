@@ -33,8 +33,9 @@ public class StartingPoint {
                     + "\n Enter 'a' to manage Books. "
                     + "\n Enter 'b' to manage your account. "
                     + "\n Enter 'c' to manage Authors."
-                    + "\n Enter 'd' to manage Publishers."
-                    + "\n Enter 'e' to view admin options. ");
+                    + "\n Enter 'd' to manage Publishers."                
+                    + "\n Enter 'e' to view admin options. "
+                    + "\n Enter 'f' to manage Borrowings. ");
             String choice = scanChoice.next();
 
             switch (choice) {
@@ -48,6 +49,8 @@ public class StartingPoint {
                     this.managePublisher();
                 case "e" ->
                     this.adminOptions();
+                case "f" ->
+                    this.manageBorrowed();
                 default ->
                     System.out.println("Invalid operation.");
             }
@@ -127,6 +130,7 @@ public class StartingPoint {
                         +"\n Enter 'r' to update a genre."
                         +"\n Enter 's' to remove a genre."
                         +"\n Enter 't' to list all borrowed books."
+                        +"\n Enter 'u' to list all borrowed books and user info."
                         + "\n Enter 'q' to Quit."
                 );
 
@@ -290,12 +294,32 @@ public class StartingPoint {
                         System.out.println("genre removed successfully");
                     }
                     case "t" ->{
-                        Scanner scanner = new Scanner(System.in);
-                        System.out.print("Enter the ID of the genre to remove:");
-                        int genreId = scanner.nextInt();
-                        Genre.removeGenre(genreId);
-                        System.out.println("genre removed successfully");
+                        List<Borrowings> allBorrowings = Borrowings.listBorrowings();
+                    System.out.println("\n--- All Borrowings ---");
+                    for (Borrowings borrowing : allBorrowings) {
+                        System.out.println("Borrowing Date: " + borrowing.getBorrowDate() + ", Due Date: " + borrowing.getDueDate()
+                                + ", Return Date: " + borrowing.getReturnDate()
+                                + ", ISBN: " + borrowing.getBookISBN()
+                                + ", Borrowing ID: " + borrowing.getBorrowID()
+                                + ", Customer ID: " + borrowing.getCustomerID()
+                        );
                     }
+                    break;
+                    }
+                    case "u" ->{
+                        List<Borrowings> allBorrowings = Borrowings.listBorrowedBooksAndUserInfo();
+                    System.out.println("\n--- All Borrowings ---");
+                    for (Borrowings borrowing : allBorrowings) {
+                        System.out.println("Borrowing Date: " + borrowing.getBorrowDate() + ", Due Date: " + borrowing.getDueDate()
+                                + ", Return Date: " + borrowing.getReturnDate()
+                                + ", ISBN: " + borrowing.getBookISBN()
+                                + ", Borrowing ID: " + borrowing.getBorrowID()
+                                + ", Customer ID: " + borrowing.getCustomerID()
+                        );
+                    }
+                    break;
+                    }
+                    
                     case "q" ->
                         System.out.println("\nExiting admin menu.\n");
                     default ->
@@ -977,22 +1001,36 @@ public class StartingPoint {
                     System.out.println("\n--- Most Borrowed Book ---");
                     for (Borrowings borrow : mostBorrowed) {
                         System.out.println(" ID: " + borrow.getBorrowID());
+                        //how do i do this method to show everyhing, show i just stick to borrowing class variables, or is this easily possible? 
                     }
                     
                     break;
                 case 2:
                     // update borrowing
-                    Scanner scan = new Scanner(System.in);
-                    System.out.println("Please provide an author ID: ");
-                    int authorID = scan.nextInt();
-                    List<Book> booksByAuthor = Book.listBooksByAuthor(authorID);
-                    System.out.println("\n--- Books Ordered by Author ---");
-                    for (Book book : booksByAuthor) {
-                        System.out.println("ISBN: " + book.getIsbn() + ", Title: " + book.getTitle()
-                                + ", Available Copies: " + book.getAvailable_copies()
-                                + ", Total Copies: " + book.getTotal_copies()
-                                + ", Publication Year: " + book.getPublication_year());
+                    scanner = new Scanner(System.in); // this might cause an error, not sure
+                    System.out.print("Enter the ID of the borrowing you want to update:");
+                    int borrow_ID = scanner.nextInt();
+                    updateBorrowing(borrow_ID);
+                case 3:
+                    // borrowBook
+                    {
+                        scanner = new Scanner(System.in); // might cause an error idk
+                        System.out.print("Enter Borrow Date: ");
+                        String borrow_date = scanner.nextLine();
+                        System.out.print("Enter due date: ");
+                        String due_date = scanner.nextLine();
+                        System.out.print("Enter return date: ");
+                        String return_date = scanner.nextLine();
+                        System.out.print("Enter Customer ID: ");
+                        int customer_ID = scanner.nextInt();
+                        System.out.print("Enter Book ISBN: ");
+                        int book_ISBN = scanner.nextInt();
+                        scanner.nextLine();
+                        Borrowings newBorrow = new Borrowings(borrow_date,due_date,return_date,customer_ID,book_ISBN);
+                        newBorrow.addBorrowing();
+                        System.out.println("Borrowing added successfully.");
                     }
+                    
                     break;
                 case 9:
                     // Exit the loop
@@ -1077,7 +1115,9 @@ public class StartingPoint {
                     }
                 }
                 case "q" ->
-                    System.out.println("\nExiting borrowing manager..\n");
+                    System.out.println("\nExiting borrowing manager..\n"); // doesnt exit out the loop
+                    
+                    
                 default ->
                     System.out.println("Invalid operation.");
             }
