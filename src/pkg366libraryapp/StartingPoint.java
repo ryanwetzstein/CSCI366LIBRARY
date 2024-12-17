@@ -1,7 +1,8 @@
 package pkg366libraryapp;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -606,7 +607,8 @@ public class StartingPoint {
             System.out.println("7. List Books by Author");
             System.out.println("8. List Books by Publisher");
             System.out.println("9. List All Genres");
-            System.out.println("10. Exit");
+            System.out.println("10. List View");
+            System.out.println("11. Exit");
             System.out.print("Enter your choice: ");
 
             // Get user input
@@ -697,6 +699,17 @@ public class StartingPoint {
                     }
                     break;
                 case 10:
+                {
+                    try {
+                        // List View
+                        listView();
+                    } catch (SQLException e) {
+                        System.out.println("Got a SQL exception.");
+                        e.printStackTrace();
+                    }
+                }
+                    break;
+                case 11:
                     // Exit the loop
                     System.out.println("Exiting...");
                 default:
@@ -1121,6 +1134,29 @@ public class StartingPoint {
                 default ->
                     System.out.println("Invalid operation.");
             }
+        }
+    }
+    
+    public static void listView() throws SQLException {
+        String query = "SELECT * FROM public.bookdetails";
+
+        PreparedStatement pstmtSelect = DatabaseManager.getConnection().prepareStatement(query);
+
+        ResultSet rs = pstmtSelect.executeQuery();
+
+        while (rs.next()) {
+            int isbn = rs.getInt("isbn");
+            String title = rs.getString("title");
+            int publication_year = rs.getInt("publication_year");
+            String author = rs.getString("author");
+            String publisher = rs.getString("publisher");
+            String genre_name = rs.getString("genre_name");
+            
+            System.out.println("\nISBN: " + isbn
+                + "\nTitle: " + title
+                + "\nPublication Year: " + publication_year
+                + "\nAuthor: " + author
+                + "\nPublisher: " + genre_name);
         }
     }
 }
