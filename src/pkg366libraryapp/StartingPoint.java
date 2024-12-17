@@ -1156,7 +1156,8 @@ public class StartingPoint {
                 + "\nTitle: " + title
                 + "\nPublication Year: " + publication_year
                 + "\nAuthor: " + author
-                + "\nPublisher: " + genre_name);
+                + "\nPublisher: " + publisher
+                +"\nGenre Name: " + genre_name);
         }
     }
 }
